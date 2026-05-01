@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Mecânicos Brasil - Comunidade + Chamadas</title>
+    <!-- Daily.co SDK para videochamada de alta qualidade -->
+    <script src="https://unpkg.com/@daily-co/daily-js-iframe@0.0.6/dist/daily-js-iframe.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e6e9f0 0%, #d1d9e6 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .app-header {
+            background: #0b2b26;
+            padding: 1.2rem 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .app-header h1 span {
+            background: #f4a261;
+            font-size: 1rem;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+
+        .sub {
+            font-size: 0.8rem;
+            opacity: 0.85;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 0;
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2d3e3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #e76f51;
+            border-bottom: 3px solid #e76f51;
+        }
+
+        .tab-pane {
+            display: none;
+            padding: 1.5rem;
+            animation: fade 0.2s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* cards */
+        .oficina-card {
+            background: #fef9e6;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 6px solid #e76f51;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #3d5a5b;
+            font-size: 0.85rem;
+        }
+
+        input, select, textarea {
+            padding: 10px 14px;
+            border-radius: 60px;
+            border: 1px solid #cddce6;
+            background: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn {
+            background: #e76f51;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background: #2a9d8f;
+        }
+
+        /* comunidade feed */
+        .feed-posts {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .post-card {
+            background: #f8fafc;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            border: 1px solid #e2edf2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #0f2b28;
+            margin-bottom: 8px;
+        }
+
+        .post-media {
+            margin: 12px 0;
+        }
+
+        .post-media img, .post-media video {
+            max-width: 100%;
+            border-radius: 20px;
+            max-height: 280px;
+            background: #e9ecef;
+        }
+
+        audio {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        .post-text {
+            color: #2c3e3a;
+            margin-top: 6px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #2a9d8f;
+        }
+
+        .media-upload-area {
+            background: #f1f5f9;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .inline-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .small-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* video call room */
+        .call-container {
+            background: #111;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        #dailyFrame {
+            width: 100%;
+            height: 480px;
+            border: none;
+            border-radius: 1rem;
+            background: #1e1e2a;
+        }
+
+        .call-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .danger-btn {
+            background: #d9534f;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="app-header">
+        <h1>🔧 MECÂNICOS BR <span>COMUNIDADE</span></h1>
+        <div class="sub">Conecte sua oficina • Compartilhe mídia • Vídeo chamada HD</div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="busca">🔍 Buscar Mecânicos</button>
+        <button class="tab-btn" data-tab="comunidade">👥 Comunidade + Mídia</button>
+        <button class="tab-btn" data-tab="chamadas">📹 Vídeo / Voz (HD)</button>
+    </div>
+
+    <!-- Aba 1: Busca de mecânicos igual ao original -->
+    <div id="buscaTab" class="tab-pane active">
+        <div class="oficina-card">
+            <h3>🏪 Minha Oficina</h3>
+            <div class="input-group">
+                <label>📛 Nome da oficina</label>
+                <input type="text" id="oficinaNome" value="Oficina Central SP">
+            </div>
+            <div class="input-group">
+                <label>📍 Cidade/Estado</label>
+                <input type="text" id="oficinaLocal" value="São Paulo - SP">
+            </div>
+            <button id="buscarMecanicosBtn" class="btn">🔍 Buscar Mecânicos parceiros</button>
+        </div>
+
+        <div class="filtros-area" style="background:#f1f5f9; padding:1rem; border-radius:1.2rem;">
+            <h4>⚙️ Filtrar profissionais</h4>
+            <div class="filtro-row" style="display:flex; gap:10px; flex-wrap:wrap;">
+                <select id="filtroEstado" style="flex:1;">
+                    <option value="">Todos estados</option>
+                    <option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="RS">RS</option><option value="BA">BA</option><option value="PR">PR</option><option value="GO">GO</option>
+                </select>
+                <input type="text" id="filtroEspecialidade" placeholder="Especialidade" style="flex:1;">
+                <button id="aplicarFiltroBtn" class="btn-secondary" style="width:auto;">Filtrar</button>
+            </div>
+        </div>
+
+        <div class="mecanicos-list">
+            <div style="display:flex; justify-content: space-between; margin-bottom:12px;">
+                <h3>👨‍🔧 Mecânicos Brasil</h3>
+                <span id="contagemMecanicos" class="contagem" style="background:#e2e8f0; padding:4px 12px; border-radius:30px;">0</span>
+            </div>
+            <div id="listaMecanicosContainer" class="cards-mecanicos" style="max-height:420px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- Aba 2: Comunidade com envio de fotos, vídeos, áudios -->
+    <div id="comunidadeTab" class="tab-pane">
+        <div class="media-upload-area">
+            <h4>📢 Publicar na Comunidade</h4>
+            <textarea id="postText" rows="2" placeholder="Diga algo para a rede de mecânicos..." style="border-radius: 24px; width:100%;"></textarea>
+            <div class="inline-buttons">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                <button id="selectImageBtn" class="small-btn">📸 Foto</button>
+                <input type="file" id="videoInput" accept="video/*" style="display:none;">
+                <button id="selectVideoBtn" class="small-btn">🎥 Vídeo</button>
+                <button id="recordAudioBtn" class="small-btn">🎙️ Gravar Áudio</button>
+                <button id="publishPostBtn" class="btn-secondary" style="background:#2a9d8f;">📤 Publicar</button>
+            </div>
+            <div id="audioPreview" style="margin-top:8px; font-size:0.75rem; color:#2a9d8f;"></div>
+        </div>
+        <div id="communityFeed" class="feed-posts">
+            <!-- posts serao inseridos aqui -->
+            <div class="sem-resultados" style="text-align:center; padding:2rem;">A comunidade está começando! Publique algo.</div>
+        </div>
+    </div>
+
+    <!-- Aba 3: Videochamada de alta qualidade e voz (Daily.co) -->
+    <div id="chamadasTab" class="tab-pane">
+        <div class="oficina-card" style="margin-bottom:16px;">
+            <h3>📞 Sala de Vídeo & Voz</h3>
+            <p style="font-size:0.85rem; margin-bottom:12px;">Entre em uma sala privada com qualidade HD. Ideal para reuniões rápidas com clientes ou outros mecânicos.</p>
+            <div class="input-group">
+                <label>Nome da sala (crie uma única ou use padrão)</label>
+                <input type="text" id="roomName" value="mecanicos-brasil-oficina" placeholder="ex: reuniao-mecanica">
+            </div>
+            <div class="inline-buttons" style="justify-content:space-between;">
+                <button id="joinVideoCallBtn" class="btn" style="flex:1;">📹 Iniciar Videochamada</button>
+                <button id="joinAudioOnlyBtn" class="btn-secondary" style="flex:1;">🎧 Somente Voz</button>
+                <button id="leaveCallBtn" class="btn-danger" style="background:#d9534f; flex:0.5;">❌ Sair</button>
+            </div>
+        </div>
+        <div id="callWrapper" style="display:none;">
+            <div class="call-container">
+                <iframe id="dailyFrame" allow="camera; microphone; display-capture; autoplay" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div id="callStatus" style="font-size:0.8rem; text-align:center; margin-top:8px; color:#2d3e3a;"></div>
+    </div>
+    <footer style="background:#f7f7f7; text-align:center; padding:0.8rem; font-size:0.7rem;">📡 Comunidade com mídia + Chamadas WebRTC de alta performance</footer>
+</div>
+
+<script>
+    // ------------------------- BASE DE MECÂNICOS (Pequena, mas abrangente) -------------------------
+    const mecanicosDatabase = [
+        { id: 1, nome: "Carlos Mecânica Rápida", estado: "SP", cidade: "São Paulo", especialidade: "Motor e Injeção", telefone: "(11) 98765-4321", whatsapp: "11987654321" },
+        { id: 2, nome: "Oficina do Beto", estado: "RJ", cidade: "Rio de Janeiro", especialidade: "Suspensão e Freios", telefone: "(21) 99876-5432", whatsapp: "21998765432" },
+        { id: 3, nome: "Mega Diesel", estado: "MG", cidade: "Belo Horizonte", especialidade: "Diesel e Caminhões", telefone: "(31) 98745-1236", whatsapp: "31987451236" },
+        { id: 4, nome: "Auto Elétrica Sul", estado: "RS", cidade: "Porto Alegre", especialidade: "Elétrica e Ar", telefone: "(51) 97654-3210", whatsapp: "51976543210" },
+        { id: 5, nome: "Mecânica Baiana", estado: "BA", cidade: "Salvador", especialidade: "Suspensão", telefone: "(71) 98844-3322", whatsapp: "71988443322" },
+        { id: 6, nome: "Oficina do Paraná", estado: "PR", cidade: "Curitiba", especialidade: "Injeção Eletrônica", telefone: "(41) 99653-2111", whatsapp: "41996532111" },
+        { id: 7, nome: "Mecânica Goiás", estado: "GO", cidade: "Goiânia", especialidade: "Câmbio automático", telefone: "(62) 98654-7788", whatsapp: "62986547788" }
+    ];
+    
+    let oficinaNomeAtual = "Oficina Central SP";
+    let oficinaLocalAtual = "São Paulo - SP";
+
+    // Comunidade: armazenar posts (array com texto, tipo de mídia, url, áudio blob)
+    let comunidadePosts = [];
+    let recordingChunks = [];
+    let mediaRecorder = null;
+    let audioUrl = null;
+
+    // Elementos
+    const buscarBtn = document.getElementById("buscarMecanicosBtn");
+    const aplicarFiltro = document.getElementById("aplicarFiltroBtn");
+    const filtroEstado = document.getElementById("filtroEstado");
+    const filtroEspecialidade = document.getElementById("filtroEspecialidade");
+    const listaContainer = document.getElementById("listaMecanicosContainer");
+    const contagemSpan = document.getElementById("contagemMecanicos");
+
+    // Comunidade
+    const postText = document.getElementById("postText");
+    const imageInput = document.getElementById("imageInput");
+    const videoInput = document.getElementById("videoInput");
+    const selectImageBtn = document.getElementById("selectImageBtn");
+    const selectVideoBtn = document.getElementById("selectVideoBtn");
+    const recordAudioBtn = document.getElementById("recordAudioBtn");
+    const publishPostBtn = document.getElementById("publishPostBtn");
+    const communityFeed = document.getElementById("communityFeed");
+    const audioPreviewSpan = document.getElementById("audioPreview");
+
+    // Vídeo Chamada
+    let dailyFrame = document.getElementById("dailyFrame");
+    let callWrapper = document.getElementById("callWrapper");
+    let dailyCallObject = null;
+    let isInCall = false;
+    const joinVideoBtn = document.getElementById("joinVideoCallBtn");
+    const joinAudioOnlyBtn = document.getElementById("joinAudioOnlyBtn");
+    const leaveCallBtn = document.getElementById("leaveCallBtn");
+    const roomNameInput = document.getElementById("roomName");
+    const callStatusSpan = document.getElementById("callStatus");
+
+    // Variável para armazenar mídia selecionada temporariamente
+    let selectedImageFile = null;
+    let selectedVideoFile = null;
+    let recordedAudioBlob = null;
+
+    // ---------- FUNÇÃO MECÂNICOS ----------
+    function renderMecanicos() {
+        let estado = filtroEstado.value;
+        let esp = filtroEspecialidade.value.trim().toLowerCase();
+        let filtered = mecanicosDatabase.filter(m => {
+            if(estado && m.estado !== estado) return false;
+            if(esp && !m.especialidade.toLowerCase().includes(esp)) return false;
+            return true;
+        });
+        contagemSpan.innerText = filtered.length + " profissional(is)";
+        if(filtered.length === 0) {
+            listaContainer.innerHTML = "<div class='sem-resultados'>Nenhum mecânico encontrado.</div>";
+            return;
+        }
+        let html = "";
+        filtered.forEach(m => {
+            html += `<div class="mecanico-item" style="background:white; border-radius:1rem; padding:0.8rem; margin-bottom:8px;">
+                        <div><strong>🔧 ${m.nome}</strong> <span style="background:#e9ecef; padding:2px 8px; border-radius:20px;">${m.estado}</span></div>
+                        <div style="font-size:0.8rem;">⚙️ ${m.especialidade}</div>
+                        <div style="font-size:0.7rem;">📞 ${m.telefone}</div>
+                        <button class="btn-contato-mec" data-whats="${m.whatsapp}" data-nome="${m.nome}" style="margin-top:6px; background:#2a9d8f; border:none; border-radius:60px; padding:6px 12px; color:white;">💬 WhatsApp</button>
+                    </div>`;
+        });
+        listaContainer.innerHTML = html;
+        document.querySelectorAll('.btn-contato-mec').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let whats = btn.getAttribute('data-whats');
+                let nomeMec = btn.getAttribute('data-nome');
+                let msg = `Olá ${nomeMec}, sou da oficina "${oficinaNomeAtual}" (${oficinaLocalAtual}) - encontrei seu contato no App Mecânicos Brasil.`;
+                window.open(`https://wa.me/55${whats}?text=${encodeURIComponent(msg)}`, '_blank');
+            });
+        });
+    }
+
+    function buscarOficina() {
+        oficinaNomeAtual = document.getElementById("oficinaNome").value.trim() || "Oficina BR";
+        oficinaLocalAtual = document.getElementById("oficinaLocal").value.trim() || "Brasil";
+        alert(`✅ "${oficinaNomeAtual}" conectado à rede! Use filtros para encontrar mecânicos.`);
+        filtroEstado.value = "";
+        filtroEspecialidade.value = "";
+        renderMecanicos();
+    }
+
+    // ---------- COMUNIDADE com Mídia (fotos, video, audio) ----------
+    function loadCommunityFeed() {
+        if(comunidadePosts.length === 0) {
+            communityFeed.innerHTML = "<div class='sem-resultados' style='text-align:center; padding:2rem;'>📢 Nenhuma publicação ainda. Envie fotos, vídeos ou áudios!</div>";
+            return;
+        }
+        let feedHtml = "";
+        comunidadePosts.forEach((post, idx) => {
+            let mediaHtml = "";
+            if(post.type === "image" && post.dataUrl) {
+                mediaHtml = `<div class="post-media"><img src="${post.dataUrl}" alt="foto"></div>`;
+            } else if(post.type === "video" && post.dataUrl) {
+                mediaHtml = `<div class="post-media"><video controls src="${post.dataUrl}" style="max-width:100%; border-radius:1rem;"></video></div>`;
+            } else if(post.type === "audio" && post.dataUrl) {
+                mediaHtml = `<div class="post-media"><audio controls src="${post.dataUrl}"></audio></div>`;
+            }
+            feedHtml += `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span>🔧 ${post.autor}</span>
+                        <span>${new Date(post.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                    ${mediaHtml}
+                    <div class="post-text">${post.texto.replace(/</g, "&lt;")}</div>
+                    <div class="post-actions">❤️ Curtir | 💬 Comentar</div>
+                </div>
+            `;
+        });
+        communityFeed.innerHTML = feedHtml;
+    }
+
+    function publishPost() {
+        let texto = postText.value.trim();
+        if(!texto && !selectedImageFile && !selectedVideoFile && !recordedAudioBlob) {
+            alert("Escreva algo ou envie uma mídia.");
+            return;
+        }
+        let mediaType = "text";
+        let mediaData = null;
+        if(selectedImageFile) {
+            mediaType = "image";
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                mediaData = e.target.result;
+                finalizePost(texto, mediaType, mediaData);
+            };
+            reader.readAsDataURL(selectedImageFile);
+            return;
+        } else if(selectedVideoFile) {
+            mediaType = "video";
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                mediaData = e.target.result;
+                finalizePost(texto, mediaType, mediaData);
+            };
+            reader.readAsDataURL(selectedVideoFile);
+            return;
+        } else if(recordedAudioBlob) {
+            mediaType = "audio";
+            mediaData = URL.createObjectURL(recordedAudioBlob);
+            finalizePost(texto, mediaType, mediaData);
+            return;
+        } else {
+            finalizePost(texto, "text", null);
+        }
+        resetMediaSelections();
+    }
+
+    function finalizePost(texto, type, dataUrl) {
+        const newPost = {
+            id: Date.now(),
+            autor: oficinaNomeAtual || "Oficina Mecânica",
+            texto: texto || "(sem texto)",
+            type: type,
+            dataUrl: dataUrl,
+            timestamp: Date.now()
+        };
+        comunidadePosts.unshift(newPost);
+        loadCommunityFeed();
+        postText.value = "";
+        resetMediaSelections();
+        audioPreviewSpan.innerText = "";
+    }
+
+    function resetMediaSelections() {
+        selectedImageFile = null;
+        selectedVideoFile = null;
+        recordedAudioBlob = null;
+        if(audioUrl) URL.revokeObjectURL(audioUrl);
+        audioUrl = null;
+    }
+
+    // Áudio recording
+    let audioStream = null;
+    async function startRecordingAudio() {
+        if(mediaRecorder && mediaRecorder.state === "recording") {
+            alert("Já está gravando!");
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioStream = stream;
+            mediaRecorder = new MediaRecorder(stream);
+            recordingChunks = [];
+            mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordingChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(recordingChunks, { type: 'audio/webm' });
+                recordedAudioBlob = audioBlob;
+                const audioPreviewUrl = URL.createObjectURL(audioBlob);
+                audioUrl = audioPreviewUrl;
+                audioPreviewSpan.innerHTML = `🎤 Áudio gravado! <audio controls src="${audioPreviewUrl}" style="height:30px;"></audio> <button id="clearAudioBtn" style="background:transparent;">❌</button>`;
+                document.getElementById("clearAudioBtn")?.addEventListener("click", () => {
+                    recordedAudioBlob = null;
+                    if(audioUrl) URL.revokeObjectURL(audioUrl);
+                    audioPreviewSpan.innerHTML = "";
+                });
+                if(audioStream) audioStream.getTracks().forEach(track => track.stop());
+            };
+            mediaRecorder.start();
+            audioPreviewSpan.innerHTML = "⏺ Gravando áudio... clique em Parar Gravação.";
+            recordAudioBtn.innerText = "⏹️ Parar Gravação";
+            recordAudioBtn.removeEventListener("click", startRecordingAudio);
+            recordAudioBtn.addEventListener("click", stopRecordingAudio);
+        } catch(e) { alert("Permissão de microfone necessária."); }
+    }
+    function stopRecordingAudio() {
+        if(mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+            recordAudioBtn.innerText = "🎙️ Gravar Áudio";
+            recordAudioBtn.removeEventListener("click", stopRecordingAudio);
+            recordAudioBtn.addEventListener("click", startRecordingAudio);
+        } else {
+            alert("Nenhuma gravação em andamento.");
+        }
+    }
+    recordAudioBtn.addEventListener("click", startRecordingAudio);
+
+    selectImageBtn.onclick = () => imageInput.click();
+    selectVideoBtn.onclick = () => videoInput.click();
+    imageInput.onchange = (e) => { selectedImageFile = e.target.files[0]; selectedVideoFile = null; recordedAudioBlob = null; alert("Imagem selecionada!"); };
+    videoInput.onchange = (e) => { selectedVideoFile = e.target.files[0]; selectedImageFile = null; recordedAudioBlob = null; alert("Vídeo selecionado!"); };
+    publishPostBtn.onclick = publishPost;
+
+    // ---------- VIDEO CHAMADA ALTA QUALIDADE (DAILY.CO) ----------
+    async function joinCall(videoEnabled, audioEnabled) {
+        if(isInCall) {
+            await leaveCall();
+        }
+        let room = roomNameInput.value.trim() || "mecanicos-brasil-oficial";
+        const dailyIframe = dailyFrame;
+        callWrapper.style.display = "block";
+        const dailyOptions = {
+            iframeStyle: { width: '100%', height: '100%', border: 'none' },
+            showLeaveButton: false,
+            showFullscreenButton: true,
+            videoSource: videoEnabled ? true : false,
+            audioSource: audioEnabled ? true : false,
+        };
+        try {
+            dailyCallObject = window.DailyIframe.createFrame(dailyIframe, dailyOptions);
+            await dailyCallObject.join({ url: `https://meet.daily.co/v2/${room}`, ...dailyOptions });
+            isInCall = true;
+            callStatusSpan.innerText = "✅ Conectado(a) à chamada de alta qualidade!";
+            dailyCallObject.on('left-page', () => { leaveCall(); });
+        } catch (err) {
+            console.error(err);
+            callStatusSpan.innerText = "❌ Erro ao entrar na sala. Verifique câmera/microfone.";
+            callWrapper.style.display = "none";
+            isInCall = false;
+        }
+    }
+    async function leaveCall() {
+        if(dailyCallObject) {
+            await dailyCallObject.leave();
+            dailyCallObject.destroy();
+            dailyCallObject = null;
+        }
+        callWrapper.style.display = "none";
+        isInCall = false;
+        callStatusSpan.innerText = "Você saiu da chamada.";
+    }
+    joinVideoBtn.onclick = () => joinCall(true, true);
+    joinAudioOnlyBtn.onclick = () => joinCall(false, true);
+    leaveCallBtn.onclick = () => leaveCall();
+
+    // Inicializar TABS
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panes.forEach(pane => pane.classList.remove('active'));
+            if(tabId === 'busca') document.getElementById('buscaTab').classList.add('active');
+            if(tabId === 'comunidade') document.getElementById('comunidadeTab').classList.add('active');
+            if(tabId === 'chamadas') document.getElementById('chamadasTab').classList.add('active');
+        });
+    });
+
+    buscarBtn.addEventListener("click", buscarOficina);
+    aplicarFiltro.addEventListener("click", renderMecanicos);
+    renderMecanicos();
+    // Post exemplo inicial na comunidade para demonstração
+    setTimeout(() => {
+        if(comunidadePosts.length === 0) {
+            comunidadePosts.push({ id: 1, autor: "Sistema", texto: "Bem-vindo à comunidade! Compartilhe dicas, vídeos e muito mais.", type: "text", dataUrl: null, timestamp: Date.now() });
+            loadCommunityFeed();
+        }
+    }, 500);
+</script>
+</body>
+</html>
